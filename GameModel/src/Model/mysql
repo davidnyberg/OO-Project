@@ -1,0 +1,3 @@
+create database highscores;
+use highscores;
+create table scores(id int(10) not null, name varchar(20) default null, score int(10) not null, primary key (id));
