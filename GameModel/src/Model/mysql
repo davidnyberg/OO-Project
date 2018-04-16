@@ -1,3 +1,10 @@
 create database highscores;
 use highscores;
 create table scores(id int(10) not null, name varchar(20) default null, score int(10) not null, primary key (id));
+
+insert into scores(id, name, score) values (1, david, 20);
+
+bike.java
+springdriver.java
+xml
+3 files
