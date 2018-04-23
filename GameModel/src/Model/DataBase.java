@@ -5,7 +5,9 @@ Should be able now to use MySQL to store and retrieve scores
 that can be scored in the high scores
 
 @author david nyberg
-@referenced this video https://www.youtube.com/watch?v=BCqW5XwtJxY
+@references:
+https://www.youtube.com/watch?v=BCqW5XwtJxY
+https://www.tutorialspoint.com/jdbc/jdbc-insert-records.htm
  */
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -16,10 +18,12 @@ import java.sql.Statement;
 class DataBase {
 
     private String sqlGet = "select * from scores";
-    private String sqlSet = "insert into scores(id, name, score) values (%d, %s, %d)";
     private Statement statement;
     private ResultSet results;
     private Connection con;
+    private String name;
+    private int score;
+    private int id;
 
     DataBase() {
         final String URL = "jdbc:mysql://localhost:3306/highscores?useSSL=false";
@@ -39,7 +43,7 @@ class DataBase {
 
     }
     void getScore() {
-        //gets the score from the controller after a game is finished, can use SQL to put into the DB
+        //gets the score from the Controller after a game is finished, can use SQL to put into the DB
         try{
             results = statement.executeQuery(sqlGet);
             while (results.next()){
@@ -55,7 +59,11 @@ class DataBase {
         }
     }
 
-    public void setScore() {
+    public void setScore(int id, String name, int score) {
+        this.name = name;
+        this.score = score;
+        this.id = id;
+        String sqlSet = "insert into scores(id, name, score) values (%d, %s, %d)"+ id + score + name;
         //insert the score into the mysql database
         // st.executeQuery(sqlSet);
     }
