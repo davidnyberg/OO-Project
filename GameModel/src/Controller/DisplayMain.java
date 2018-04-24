@@ -3,29 +3,39 @@ package Controller;
 import View.*;
 import Model.*;
 
+import javax.swing.*;
+import java.awt.*;
+
 public class DisplayMain {
+
+    JFrame window;
 
     DisplayMain(){
 
+      //init window
+      window = new JFrame();
+      window.setBackground(Color.red);
+      window.setSize(700, 400);
+      window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+      window.setResizable(true);
+      window.setVisible(true);
 
-      SwingMenu menu = new SwingMenu(this);
-
-      //menu
-
+      //create view
+      new MainMenuView(window, this);
     }
 
 
     public void PlayPressed(){
         //.setText("clicked play");
         //set view to the game screen
-        new Game();
+        new Game(window);
     }
 
     public void Leaderboard(){
-        new Leadboard(this);
+        new LeaderboardView(window, this);
     }
 
     public void BackButton(){
-        new SwingMenu(this);
+        new MainMenuView(window, this);
     }
 }

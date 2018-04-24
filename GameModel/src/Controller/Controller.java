@@ -12,7 +12,7 @@ public class Controller{
         //private JButton play=new JButton("Play Game");
         //private JButton ldrboard=new JButton("Play Game");
 
-
+        //JFrame frame = new JFrame();
         new DisplayMain();
 
     }
