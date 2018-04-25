@@ -1,7 +1,5 @@
 package Model;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public abstract class GameObject {
@@ -54,10 +52,5 @@ public abstract class GameObject {
 
     public void setRotation(float rotation){
         this.rotation = rotation;
-    }
-
-    public void render(Graphics g){
-        g.setColor(Color.red);
-        g.fillRect((int)xpos,(int)ypos,(int)scale,(int)scale);
     }
 }

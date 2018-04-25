@@ -4,6 +4,7 @@ Added mysql-connector-java jar files as external libraries
 Should be able now to use MySQL to store and retrieve scores
 that can be scored in the high scores
 
+@author david nyberg
 @references:
 https://www.youtube.com/watch?v=BCqW5XwtJxY
 https://www.tutorialspoint.com/jdbc/jdbc-insert-records.htm
@@ -14,7 +15,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 
-public class DataBase {
+class DataBase {
 
     private String sqlGet = "select * from scores";
     private Statement statement;
@@ -24,7 +25,7 @@ public class DataBase {
     private int score;
     private int id;
 
-    public DataBase() {
+    DataBase() {
         final String URL = "jdbc:mysql://localhost:3306/highscores?useSSL=false";
         final String USER = "root";
         final String PASS = "root";
@@ -41,41 +42,34 @@ public class DataBase {
         System.out.println("Success!");
 
     }
-    public String getScore() {
-        //get score from db
-        //String[] out;
-       // out = new String[10];
-        String out = "test";
+    void getScore() {
+        //gets the score from the Controller after a game is finished, can use SQL to put into the DB
         try{
             results = statement.executeQuery(sqlGet);
             while (results.next()){
 
-                String name1 = results.getString("name");
-                String score2 = results.getString("score");
-                // System.out.println("Retrieving highscores...");
-                // System.out.println(name +" "+ score);
-               // out[0] = name1;
-               // out[1] = score2;
-               // return out;
-                out = name1 + " " + score2;
+                String name = results.getString("name");
+                String score = results.getString("score");
+                System.out.println("Retrieving highscores...");
+                System.out.println(name +" "+ score);
+
             }
         } catch (Exception e) {
             System.out.println(e);
         }
-        return out;
     }
 
     public void setScore(int id, String name, int score) {
         this.name = name;
         this.score = score;
         this.id = id;
-        String sqlSet = String.format("insert into scores(id, name, score) values (%d, %s, %d)",id,name, score);
+        String sqlSet = "insert into scores(id, name, score) values (%d, %s, %d)"+ id + score + name;
         //insert the score into the mysql database
-        try {
-            results = statement.executeQuery(sqlSet);
+        // st.executeQuery(sqlSet);
+    }
 
-        } catch (Exception e){
-            System.out.println(e);
-        }
+    public int returnScore() {
+        //will return the score from the database with SQL to the View leaderboard screen
+        return 0;
     }
 }

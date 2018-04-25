@@ -5,29 +5,47 @@ import View.GameView;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
+
+    private DataBase con = new DataBase();
+
     private JFrame window;
-    private List<Wall> walls;
+    private List<GameObject> walls;
     private Player player;
     private List<Enemy> enemies;
     private List<Bullet> bullets;
+    private int score = 0;
+    private BufferedImage a,b;
+
 
     Game(JFrame window) {
        //create view
        this.window = window;
-       new GameView(window,this);
+       walls = new ArrayList<GameObject>();
+       walls.add(new Wall(10,10,10,1, a));
+       walls.add(new Wall(15,15, 10, 1 , b));
 
+        window.getContentPane().removeAll();
+        window.add(new GameView(window, this, walls));
+        //new GameView(window,this, walls);
+
+        window.getContentPane().revalidate();
+        window.getContentPane().repaint();
        //initialize objects
        //player = new Player(0,0,1,0, a, 1,1);
        //create walls
+        //score = 0;
 
     }
 
     public void GameLoop(){
         //start game loop
-        while (true){
+        while (true) {
+            //score++;
+            //con.setScore(1, "test", score);
           //--Move objects--
           //move player
           HandleInput();
@@ -74,4 +92,6 @@ public class Game {
       if(player != null)
         player.MoveInDirection(moveVecX, moveVecY);
     }
+
+
 }
