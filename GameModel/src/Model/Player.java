@@ -3,7 +3,6 @@ package Model;
 import java.awt.image.BufferedImage;
 
 public class Player extends DynamicObject {
-    private float moveSpeed;
     private float shootSpeed;
 
     public Player(float xpos, float ypos, float scale, float rotation, BufferedImage sprite,

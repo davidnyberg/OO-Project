@@ -2,6 +2,8 @@ package Model;
 
 import java.awt.image.BufferedImage;
 
+import static java.lang.Math.sqrt;
+
 public abstract class DynamicObject extends GameObject {
 
   private float speed;
@@ -28,4 +30,16 @@ public abstract class DynamicObject extends GameObject {
 
   public void setSpeed(float s){this.speed = s;}
   public void setIsDead(boolean d){this.isDead = d;}
+
+  public void MoveInDirection(float x, float y)
+  {
+    if(x == 0 && y == 0)
+      return;
+
+    float mag = (float)sqrt(x*x + y*y);
+    float nx = x / mag;
+    float ny = y / mag;
+    this.setXpos(this.getXpos() + (nx * speed));
+    this.setYpos(this.getYpos() + (ny * speed));
+  }
 }
