@@ -133,10 +133,12 @@ public class Game {
       return collisionList;
     }
 
-    public void GameLoop(){
+    public void movePlayer(int x, int y){
+        //move player
+        player.MoveInDirection(x, y);
+    }
 
-      //move player
-      player.MoveInDirection(1, 0);
+    public void GameLoop(){
 
       //check for collisions
       List<GameObject> playerCollisions = checkCollisions(player);
