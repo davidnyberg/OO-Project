@@ -23,7 +23,7 @@ public class Game {
     private int score = 0;
 
     Game(JFrame window) {
-       //create view
+      //init stuff
        this.window = window;
        walls = new ArrayList<>();
        enemies = new ArrayList<>();
@@ -32,10 +32,25 @@ public class Game {
        width = 700;
        height = 400;
 
-      walls.add(new Wall(10,10,30,1));
-      walls.add(new Wall(15,15, 30, 1));
+       initWalls();
 
+      //create view
        new GameView(window, this, height, width, getAllObjects());
+    }
+
+    private void initWalls()
+    {
+      int scale = 30; //if you change this, change number of walls created
+      int ycount = 11;
+      int xcount = 22;
+      for(int x = 0; x <= xcount; x++) {
+        walls.add(new Wall(x*scale, 0, scale, 0));
+        walls.add(new Wall(x*scale, scale*ycount, scale, 0));
+      }
+      for(int y = 1; y < ycount; y++){
+        walls.add(new Wall(0, y*scale, scale, 0));
+        walls.add(new Wall(xcount*scale, y*scale, scale, 0));
+      }
     }
 
     public List<GameObject> getAllObjects()

@@ -43,7 +43,7 @@ class DataBase {
 
     }
     void getScore() {
-        //gets the score from the Controller after a game is finished, can use SQL to put into the DB
+        //gets the score from the controller after a game is finished, can use SQL to put into the DB
         try{
             results = statement.executeQuery(sqlGet);
             while (results.next()){
