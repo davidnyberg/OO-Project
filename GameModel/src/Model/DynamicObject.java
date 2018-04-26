@@ -14,6 +14,8 @@ public abstract class DynamicObject extends GameObject {
   private Image deathSprite;
 
 
+  private int lastXpos;
+  private int lastYpos;
 
   public DynamicObject(float x, float y, float scale, float rotation, String spriteName,
                        float speed, float deathLength, String deathSpriteName)

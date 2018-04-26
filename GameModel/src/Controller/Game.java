@@ -4,9 +4,10 @@ import Model.*;
 import View.GameView;
 
 import javax.swing.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Game {
 
@@ -15,6 +16,7 @@ public class Game {
     private int width;
     private int height;
 
+    private GameView view;
     private JFrame window;
     private List<Wall> walls;
     private Player player;
@@ -34,8 +36,21 @@ public class Game {
 
        initWalls();
 
+       player = new Player(50, 50, 30, 0, 3, 1, 2);
+
       //create view
-       new GameView(window, this, height, width, getAllObjects());
+       view = new GameView(window, this, height, width, getAllObjects());
+
+      //set up game loop
+      class GameLoopTask extends TimerTask {
+        public void run()
+        {
+          GameLoop();
+        }
+      }
+      Timer t = new Timer();
+      t.schedule(new GameLoopTask(), 0, 1000/60);
+
     }
 
     private void initWalls()
@@ -63,14 +78,79 @@ public class Game {
       return allObjects;
     }
 
+    public class collisionData
+    {
+      public GameObject object;
+      public int xdir;
+      public int ydir;
+      public collisionData(GameObject ob, int x, int y){
+        this.object = ob;
+        this.xdir = x;
+        this.ydir = y;
+      }
+    }
+
+    private List<GameObject> checkCollisions(DynamicObject object)
+    {
+      List<GameObject> collisionList = new ArrayList<>();
+      List<GameObject> allObjects = getAllObjects();
+      allObjects.remove(object);
+
+      int xpos = (int)object.getXpos();
+      int ypos = (int)object.getYpos();
+      int scaleHalf = (int)object.getScale() / 2;
+
+      int lb1 = (xpos - scaleHalf);
+      int rb1 = (xpos + scaleHalf);
+      int bb1 = (ypos - scaleHalf);
+      int tb1 = (ypos + scaleHalf);
+
+      for(GameObject ob : allObjects)
+      {
+        int OBxpos = (int)ob.getXpos();
+        int OBypos = (int)ob.getYpos();
+        int OBscaleHalf = (int)ob.getScale() / 2;
+
+        int lb2 = (OBxpos - OBscaleHalf);
+        int rb2 = (OBxpos + OBscaleHalf);
+        int bb2 = (OBypos - OBscaleHalf);
+        int tb2 = (OBypos + OBscaleHalf);
+
+        boolean left = rb1 > lb2 && lb1 < lb2;
+        boolean right = lb1 < rb2 && rb1 > rb2;
+        boolean top = bb1 < tb2 && tb1 > tb2;
+        boolean bottom = tb1 > bb2 && bb1 < bb2;
+
+
+        boolean horizontalOverlap = left || right;
+        boolean verticalOverlap = top || bottom;
+
+        if(horizontalOverlap && verticalOverlap) {
+          collisionList.add(ob);
+        }
+      }
+
+      return collisionList;
+    }
+
     public void GameLoop(){
-        //start game loop
-        while (true) {
-            //score++;
-            //con.setScore(1, "test", score);
+
+      //move player
+      player.MoveInDirection(1, 0);
+
+      //check for collisions
+      List<GameObject> playerCollisions = checkCollisions(player);
+      System.out.println(checkCollisions(player));
+
+
+      view.repaint();
+
+
+          //score++;
+          //con.setScore(1, "test", score);
           //--Move objects--
           //move player
-          HandleInput();
+          //HandleInput();
           //move enemies (toward player)
           //move bullets (forward)
 
@@ -90,8 +170,6 @@ public class Game {
           //while(need to spawn more enemies)
             //gen approriate spawn area (not in wall, not too close to player
             //enemies.add(new enemy)
-
-        }
     }
 
     public void HandleInput()

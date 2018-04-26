@@ -10,6 +10,7 @@ import java.awt.image.BufferStrategy;
 import java.util.List;
 
 import static java.awt.Color.black;
+import static java.awt.Color.gray;
 
 public class GameView extends Canvas {
 
@@ -35,6 +36,7 @@ public class GameView extends Canvas {
     public void paint(Graphics g) {
         //window.getContentPane().removeAll();
         //background
+        g.setColor(gray);
         g.fillRect(0, 0, width, height);
         for (GameObject ob : this.g.getAllObjects()){
             ob.render(g);
