@@ -1,6 +1,7 @@
 package View;
 
-import Controller.*;
+import Controller.Game;
+import Controller.KeyboardInput;
 import Model.GameObject;
 
 import javax.swing.*;
@@ -21,7 +22,6 @@ public class GameView extends Canvas {
 
     public GameView(JFrame window, Game gameController, int height, int width, List<GameObject> o) {
         this.addKeyListener(new KeyboardInput(gameController));
-
         this.window = window;
         this.window.setResizable(false);
         window.getContentPane().removeAll();

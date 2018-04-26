@@ -7,7 +7,7 @@ public class Enemy extends DynamicObject {
     private float target_x;
     private float target_y;
 
-    Enemy(float xpos, float ypos, float scale, float rotation,
+    public Enemy(float xpos, float ypos, float scale, float rotation,
             float speed, float deathLength)
     {
         super(xpos, ypos, scale, rotation, "enemy.png", speed, deathLength, "enemyDeath.png");
@@ -19,6 +19,10 @@ public class Enemy extends DynamicObject {
     {
         this.target_x = x;
         this.target_y = y;
+    }
+
+    public void moveTowardTarget(){
+        MoveInDirection(target_x - getXpos(), target_y - getYpos());
     }
 
     public void RotateTowardTarget()
