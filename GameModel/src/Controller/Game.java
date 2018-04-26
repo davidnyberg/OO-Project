@@ -3,11 +3,14 @@ package Controller;
 import Model.*;
 import View.GameView;
 
+import javax.management.DynamicMBean;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static java.lang.StrictMath.abs;
 
 public class Game {
 
@@ -37,6 +40,7 @@ public class Game {
        initWalls();
 
        player = new Player(50, 50, 30, 0, 3, 1, 2);
+       enemies.add(new Enemy(20,20, 30, 0,3,1));
 
       //create view
        view = new GameView(window, this, height, width, getAllObjects());
@@ -52,6 +56,8 @@ public class Game {
       t.schedule(new GameLoopTask(), 0, 1000/60);
 
     }
+
+
 
     private void initWalls()
     {
@@ -78,23 +84,25 @@ public class Game {
       return allObjects;
     }
 
-    public class collisionData
+    public class CollisionData
     {
       public GameObject object;
-      public int xdir;
-      public int ydir;
-      public collisionData(GameObject ob, int x, int y){
+      public int horOverlap;
+      public int vertOverlap;
+      public CollisionData(GameObject ob, int x, int y){
         this.object = ob;
-        this.xdir = x;
-        this.ydir = y;
+        this.horOverlap = x;
+        this.vertOverlap = y;
       }
     }
 
-    private List<GameObject> checkCollisions(DynamicObject object)
+    private List<CollisionData> checkCollisions(DynamicObject object)
     {
-      List<GameObject> collisionList = new ArrayList<>();
+      List<CollisionData> collisionList = new ArrayList<>();
       List<GameObject> allObjects = getAllObjects();
       allObjects.remove(object);
+
+      //collisionData a = new collisionData();
 
       int xpos = (int)object.getXpos();
       int ypos = (int)object.getYpos();
@@ -125,25 +133,54 @@ public class Game {
         boolean horizontalOverlap = left || right;
         boolean verticalOverlap = top || bottom;
 
+
+
         if(horizontalOverlap && verticalOverlap) {
-          collisionList.add(ob);
+
+          int hori, vert;
+
+            if(left){
+                hori = rb1 - lb2;
+          } else {
+                hori = rb2 - lb1;
+            }
+
+            if (top){
+                vert = tb2 - bb1;
+            } else {
+                vert = bb2 - tb1;
+            }
+
+            collisionList.add(new CollisionData(ob, hori, vert));
         }
       }
 
       return collisionList;
     }
 
-    public void movePlayer(int x, int y){
-        //move player
-        player.MoveInDirection(x, y);
-    }
-
     public void GameLoop(){
 
+      //move player
+      //player.MoveInDirection(1, 0);
+
+      for(Enemy e : enemies){
+          e.SetTargetPosition(player.getXpos(), player.getYpos());
+          e.moveTowardTarget();
+      }
+
       //check for collisions
-      List<GameObject> playerCollisions = checkCollisions(player);
+      List<CollisionData> playerCollisions = checkCollisions(player);
       System.out.println(checkCollisions(player));
 
+      for (CollisionData cd : playerCollisions){
+          if (cd.object instanceof Wall){
+              if(abs(cd.horOverlap) < abs(cd.vertOverlap)){
+                  player.setXpos(player.getXpos()-cd.horOverlap);
+              } else {
+                  player.setYpos(player.getYpos()+cd.vertOverlap);
+              }
+          }
+      }
 
       view.repaint();
 
@@ -174,25 +211,35 @@ public class Game {
             //enemies.add(new enemy)
     }
 
-    public void HandleInput()
+    public void HandleInput(boolean W, boolean A, boolean S, boolean D, boolean SPACE, boolean LEFT, boolean RIGHT, boolean UP, boolean DOWN)
     {
-      float moveVecX = 0;
-      float moveVecY = 0;
-      //if A
-      //  move left
-      //  moveVecX -= 1;
-      //if S
-      //  move down
-      //  moveVecY -= 1;
-      //if D
-      //  move right
-      //  moveVecX += 1;
-      //if W
-      //  move up
-      //  moveVecY += 1;
+        int speed = 1;
 
-      if(player != null)
-        player.MoveInDirection(moveVecX, moveVecY);
+        //moving
+        float dx = 0;
+        float dy = 0;        if (W){ dy -= speed;}
+        if (A){ dx -= speed;}
+        if (S){ dy += speed;}
+        if (D){ dx += speed;}
+
+        if(player != null)
+            player.MoveInDirection(dx, dy);
+
+        //aiming
+        if (LEFT) {player.setRotation(180);}
+        else if (RIGHT) {player.setRotation(0);}
+        else if (UP) {player.setRotation(90);}
+        else if (DOWN) {player.setRotation(270);}
+
+
+        //shooting
+        if (SPACE){
+            player.setShootSpeed(1);
+        }
+        else {
+            player.setShootSpeed(0);
+        }
+
     }
 
 
