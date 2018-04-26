@@ -7,10 +7,10 @@ public class Enemy extends DynamicObject {
     private float target_x;
     private float target_y;
 
-    Enemy(float xpos, float ypos, float scale, float rotation, BufferedImage sprite,
-            float speed, float deathLength, BufferedImage deathSprite)
+    Enemy(float xpos, float ypos, float scale, float rotation,
+            float speed, float deathLength)
     {
-        super(xpos, ypos, scale, rotation, sprite, speed, deathLength, deathSprite);
+        super(xpos, ypos, scale, rotation, "enemy.png", speed, deathLength, "enemyDeath.png");
         target_x = xpos;
         target_y = ypos;
     }

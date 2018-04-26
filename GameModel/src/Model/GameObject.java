@@ -1,8 +1,11 @@
 package Model;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public abstract class GameObject {
 
@@ -10,14 +13,36 @@ public abstract class GameObject {
     private float ypos;
     private float scale;
     private float rotation;
-    private BufferedImage sprite;
+    private Image sprite;
 
-    GameObject(float xpos, float ypos, float scale, float rotation, BufferedImage sprite){
+    GameObject(float xpos, float ypos, float scale, float rotation, String spriteName){
         this.xpos = xpos;
         this.ypos = ypos;
         this.scale = scale;
         this.rotation = rotation;
-        this.sprite = sprite;
+        this.sprite = loadSprite(spriteName);
+    }
+
+    private Image loadSprite(String spriteName)
+    {
+        Image img = null;
+        try{
+            String path = System.getProperty("user.dir");
+
+            String OS = System.getProperty("os.name");
+            if(OS.startsWith("Windows")) {
+                path += "\\sprites\\" + spriteName;
+            }
+            else{
+                path += "/sprites/" + spriteName;
+            }
+
+            img = ImageIO.read(new File(path));
+
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        return img;
     }
 
     public float getXpos(){
@@ -36,7 +61,7 @@ public abstract class GameObject {
         return rotation;
     }
 
-    public BufferedImage getSprite(){
+    public Image getSprite(){
         return sprite;
     }
 
@@ -57,7 +82,13 @@ public abstract class GameObject {
     }
 
     public void render(Graphics g){
-        g.setColor(Color.red);
-        g.fillRect((int)xpos,(int)ypos,(int)scale,(int)scale);
+        if(sprite != null){
+            g.drawImage(sprite,(int)getXpos(), (int)getYpos(),(int)getScale(),(int)getScale(),null);
+        }
+        //default
+        else {
+            g.setColor(Color.red);
+            g.fillRect((int) xpos, (int) ypos, (int) scale, (int) scale);
+        }
     }
 }

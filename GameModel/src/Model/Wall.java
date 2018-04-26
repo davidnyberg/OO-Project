@@ -10,21 +10,8 @@ import java.io.IOException;
 
 public class Wall extends GameObject {
 
-    public Wall(float xpos, float ypos, float scale, float rotation, BufferedImage sprite)
+    public Wall(float xpos, float ypos, float scale, float rotation)
     {
-        super(xpos, ypos, scale, rotation, sprite);
-    }
-
-    @Override
-    public void render(Graphics g) {
-        Image img = null;
-        try{
-            img = ImageIO.read(new File("/Users/davidnyberg/Desktop/turtle.png"));
-
-        } catch (IOException e) {
-            System.out.println(e);
-            }
-
-            g.drawImage(img,(int)getXpos(), (int)getYpos(),40,40,null);
+        super(xpos, ypos, scale, rotation, "stoneWall.png");
     }
 }

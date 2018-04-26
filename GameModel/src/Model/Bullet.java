@@ -3,9 +3,9 @@ package Model;
 import java.awt.image.BufferedImage;
 
 public class Bullet extends DynamicObject {
-    Bullet(float xpos, float ypos, float scale, float rotation, BufferedImage sprite,
-            float speed, float deathLength, BufferedImage deathSprite)
+    Bullet(float xpos, float ypos, float scale, float rotation,
+            float speed, float deathLength)
     {
-        super(xpos, ypos, scale, rotation, sprite, speed, deathLength, deathSprite);
+        super(xpos, ypos, scale, rotation, "bullet.png", speed, deathLength, "bulletDeath.png");
     }
 }

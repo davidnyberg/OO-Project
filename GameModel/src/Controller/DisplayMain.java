@@ -18,15 +18,11 @@ public class DisplayMain {
 
       //init window
       window = new JFrame();
-
-
-
       window.setBackground(Color.red);
       window.setSize(700, 400);
       window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
       window.setResizable(true);
       window.setVisible(true);
-
 
       //create view
       new MainMenuView(window, this);

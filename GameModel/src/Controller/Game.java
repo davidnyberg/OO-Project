@@ -12,33 +12,40 @@ public class Game {
 
     private DataBase con = new DataBase();
 
+    private int width;
+    private int height;
+
     private JFrame window;
-    private List<GameObject> walls;
+    private List<Wall> walls;
     private Player player;
     private List<Enemy> enemies;
     private List<Bullet> bullets;
     private int score = 0;
-    private BufferedImage a,b;
-
 
     Game(JFrame window) {
        //create view
        this.window = window;
-       walls = new ArrayList<GameObject>();
-       walls.add(new Wall(10,10,10,1, a));
-       walls.add(new Wall(15,15, 10, 1 , b));
+       walls = new ArrayList<>();
+       enemies = new ArrayList<>();
+       bullets = new ArrayList<>();
 
-        window.getContentPane().removeAll();
-        window.add(new GameView(window, this, walls));
-        //new GameView(window,this, walls);
+       width = 700;
+       height = 400;
 
-        window.getContentPane().revalidate();
-        window.getContentPane().repaint();
-       //initialize objects
-       //player = new Player(0,0,1,0, a, 1,1);
-       //create walls
-        //score = 0;
+      walls.add(new Wall(10,10,30,1));
+      walls.add(new Wall(15,15, 30, 1));
 
+       new GameView(window, this, height, width, getAllObjects());
+    }
+
+    public List<GameObject> getAllObjects()
+    {
+      List<GameObject> allObjects = new ArrayList<>();
+      allObjects.addAll(walls);
+      if(player != null) allObjects.add(player);
+      allObjects.addAll(enemies);
+      allObjects.addAll(bullets);
+      return allObjects;
     }
 
     public void GameLoop(){

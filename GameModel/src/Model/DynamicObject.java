@@ -1,5 +1,6 @@
 package Model;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import static java.lang.Math.sqrt;
@@ -10,14 +11,14 @@ public abstract class DynamicObject extends GameObject {
   private boolean isDead;
   private float deathLength;
   private float deathTimer;
-  private BufferedImage deathSprite;
+  private Image deathSprite;
 
 
 
-  public DynamicObject(float x, float y, float scale, float rotation, BufferedImage sprite,
-                       float speed, float deathLength, BufferedImage deathSprite)
+  public DynamicObject(float x, float y, float scale, float rotation, String spriteName,
+                       float speed, float deathLength, String deathSpriteName)
   {
-    super(x, y, scale, rotation, sprite);
+    super(x, y, scale, rotation, spriteName);
     this.speed = speed;
     this.deathLength = deathLength;
     this.deathTimer = deathTimer;
