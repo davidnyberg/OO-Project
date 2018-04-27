@@ -1,6 +1,7 @@
 package Model;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import static java.lang.Math.sqrt;
@@ -9,7 +10,6 @@ public abstract class DynamicObject extends GameObject {
 
   private float speed;
   private boolean isDead;
-  private float deathLength;
   private float deathTimer;
   private Image deathSprite;
 
@@ -22,9 +22,8 @@ public abstract class DynamicObject extends GameObject {
   {
     super(x, y, scale, rotation, spriteName);
     this.speed = speed;
-    this.deathLength = deathLength;
-    this.deathTimer = deathTimer;
-    this.deathSprite = deathSprite;
+    this.deathTimer = deathLength;
+    this.deathSprite = loadSprite(deathSpriteName);
     this.isDead = false;
   }
 
@@ -33,6 +32,16 @@ public abstract class DynamicObject extends GameObject {
 
   public void setSpeed(float s){this.speed = s;}
   public void setIsDead(boolean d){this.isDead = d;}
+
+  public boolean checkDeathTime()
+  {
+    if(isDead) {
+      if (deathTimer <= 0)
+        return true;
+      deathTimer--;
+    }
+    return false;
+  }
 
   public void MoveInDirection(float x, float y)
   {
@@ -44,5 +53,25 @@ public abstract class DynamicObject extends GameObject {
     float ny = y / mag;
     this.setXpos(this.getXpos() + (nx * speed));
     this.setYpos(this.getYpos() + (ny * speed));
+  }
+
+  public void render(Graphics g)
+  {
+    if(isDead) {
+      if(deathSprite != null) {
+        Graphics2D g2d = (Graphics2D) g;
+        AffineTransform old = g2d.getTransform();
+        AffineTransform r = AffineTransform.getRotateInstance(getRotation(), (int) getXpos(), (int) getYpos());
+        g2d.setTransform(r);
+        g2d.drawImage(deathSprite, (int) getXpos() - ((int) getScale() / 2), (int) getYpos() - ((int) getScale() / 2), (int) getScale(), (int) getScale(), null);
+        g2d.setTransform(old);
+      }
+      else{
+        g.setColor(Color.red);
+        g.fillRect((int) getXpos(), (int) getYpos(), (int) getScale(), (int) getScale());
+      }
+    }
+    else
+      super.render(g);
   }
 }

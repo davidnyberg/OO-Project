@@ -25,6 +25,8 @@ public class Game {
     private Player player;
     private List<Enemy> enemies;
     private List<Bullet> bullets;
+    private List<DynamicObject> deadThings;
+
     private int score = 0;
 
     private int loopCounter;
@@ -38,6 +40,7 @@ public class Game {
        walls = new ArrayList<>();
        enemies = new ArrayList<>();
        bullets = new ArrayList<>();
+       deadThings = new ArrayList<>();
 
        width = 700;
        height = 400;
@@ -51,7 +54,7 @@ public class Game {
       walls.add(new Wall(30, 60, 30,0));
       walls.add(new Wall(30, 90,30,0));*/
 
-       //enemies.add(new Enemy(20,20, 30, 0,3,1));
+       enemies.add(new Enemy(500,300, 30, 0,1,1));
 
       //create view
        view = new GameView(window, this, height, width, getAllObjects());
@@ -123,13 +126,10 @@ public class Game {
       int bb1 = (ypos - scaleHalf);
       int tb1 = (ypos + scaleHalf);
 
-      for(GameObject ob : allObjects)
-      {
-        System.out.println("---object at "  + ob.getXpos() + " " + ob.getYpos());
-
-        int OBxpos = (int)ob.getXpos();
-        int OBypos = (int)ob.getYpos();
-        int OBscaleHalf = (int)ob.getScale() / 2;
+      for(GameObject ob : allObjects) {
+        int OBxpos = (int) ob.getXpos();
+        int OBypos = (int) ob.getYpos();
+        int OBscaleHalf = (int) ob.getScale() / 2;
 
         int lb2 = (OBxpos - OBscaleHalf);
         int rb2 = (OBxpos + OBscaleHalf);
@@ -138,45 +138,32 @@ public class Game {
 
         boolean left = rb1 > lb2 && lb1 < lb2;
         boolean right = lb1 < rb2 && rb1 >= rb2;
-        if(right)
-          System.out.println("right because rb1: " + rb1 + " > lb2: " + lb2 + " and lb1: " + lb1 + " >= lb2: " + lb2);
-        else
-          System.out.println("not right because rb1: " + rb1 + " < lb2: " + lb2 + " or lb1: " + lb1 + " < lb2: " + lb2);
         boolean top = bb1 < tb2 && tb1 >= tb2;
-        if(top)
-          System.out.println("top because bb1: " + bb1 + " < tb2: " + tb2 + " and tb1: " + tb1 + " > tb2: " + tb2);
         boolean bottom = tb1 > bb2 && bb1 < bb2;
 
         boolean horizontalOverlap = left || right;
         boolean verticalOverlap = top || bottom;
 
-        if(horizontalOverlap && verticalOverlap) {
-
-          System.out.println("collision");
+        if (horizontalOverlap && verticalOverlap) {
           int hori, vert;
-
-            if(left){
-                hori = rb1 - lb2;
+          if (left) {
+            hori = rb1 - lb2;
           } else if (right) {
-                //hori = rb2 - lb1;
-                hori = lb1 - rb2;
-            } else {
-                hori = 0;
-            }
-
-            if (top){
-                vert = bb1 - tb2;
-            } else if (bottom){
-                vert = tb1 - bb2;
-            } else {
-                vert = 0;
-            }
-
-
-            collisionList.add(new CollisionData(ob, hori, vert));
+            //hori = rb2 - lb1;
+            hori = lb1 - rb2;
+          } else {
+            hori = 0;
+          }
+          if (top) {
+            vert = bb1 - tb2;
+          } else if (bottom) {
+            vert = tb1 - bb2;
+          } else {
+            vert = 0;
+          }
+          collisionList.add(new CollisionData(ob, hori, vert));
         }
       }
-
       return collisionList;
     }
 
@@ -187,37 +174,63 @@ public class Game {
           e.moveTowardTarget();
       }
 
-      //check for collisions
-      List<CollisionData> playerCollisions = checkCollisions(player);
-      //System.out.println(checkCollisions(player));
-
-      for (CollisionData cd : playerCollisions){
-          if (cd.object instanceof Wall){
-              if(abs(cd.horOverlap) < abs(cd.vertOverlap)){
-                  player.setXpos(player.getXpos()-cd.horOverlap);
-              } else {
-                  player.setYpos(player.getYpos()-cd.vertOverlap);
-              }
-          }
-          if (cd.object instanceof Enemy){
-              //Kill player
-          }
+      //move all bullets
+      for (Bullet b : bullets){
+        b.MoveInDirection(0,0);
       }
 
-        if (player.getShootSpeed() != 0){
-          //if the speed is 0, the player is not shooting
-            if (loopCounter % player.getShootSpeed() == 0){
-                //spawn a Bullet
-                bullets.add(new Bullet(player.getXpos(), player.getYpos(), player.getScale()/4, player.getRotation(), player.getSpeed(), 1));
+
+      //check for player collisions
+      if(!player.getIsDead()) {
+        List<CollisionData> playerCollisions = checkCollisions(player);
+        for (CollisionData cd : playerCollisions) {
+          //if collision with wall, push player back
+          if (cd.object instanceof Wall) {
+            if (abs(cd.horOverlap) < abs(cd.vertOverlap)) {
+              player.setXpos(player.getXpos() - cd.horOverlap);
+            } else {
+              player.setYpos(player.getYpos() - cd.vertOverlap);
             }
-
+          }
+          if (cd.object instanceof Enemy) {
+            player.setIsDead(true);
+            deadThings.add(player);
+          }
         }
-        //move all bullets
-        for (Bullet b : bullets){
-          b.MoveInDirection(0,0);
-        }
 
-        loopCounter++;
+        //if player isn't dead, shoot
+        if (player.getShootSpeed() != 0) {
+          //if the speed is 0, the player is not shooting
+          if (loopCounter % player.getShootSpeed() == 0) {
+            //spawn a Bullet
+            bullets.add(new Bullet(player.getXpos(), player.getYpos(), player.getScale() / 4, player.getRotation(), player.getSpeed(), 1));
+          }
+        }
+      }
+
+      //despawn dead things after time
+      List<DynamicObject> stillDeadThings = new ArrayList<>();
+      for(DynamicObject dyno: deadThings)
+      {
+        if(!dyno.checkDeathTime())
+          stillDeadThings.add(dyno);
+        else
+        {
+          if(dyno instanceof Player) {
+            //game over
+          }
+          else if(dyno instanceof Enemy){
+            enemies.remove(dyno);
+          }
+          else if(dyno instanceof Bullet){
+            bullets.remove(dyno);
+          }
+        }
+      }
+      deadThings = stillDeadThings;
+      System.out.println(deadThings);
+
+      loopCounter++;
       view.paint(view.getBufferStrategy().getDrawGraphics());
       view.repaint();
 
@@ -250,6 +263,9 @@ public class Game {
 
     public void HandleInput(boolean W, boolean A, boolean S, boolean D, boolean SPACE, boolean LEFT, boolean RIGHT, boolean UP, boolean DOWN)
     {
+        if(player.getIsDead())
+          return;
+
         int speed = 1;
 
         //moving

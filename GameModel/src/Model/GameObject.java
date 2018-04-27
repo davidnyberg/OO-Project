@@ -25,7 +25,7 @@ public abstract class GameObject {
         this.sprite = loadSprite(spriteName);
     }
 
-    private Image loadSprite(String spriteName)
+    protected Image loadSprite(String spriteName)
     {
         Image img = null;
         try{
@@ -87,11 +87,8 @@ public abstract class GameObject {
         if(sprite != null){
             Graphics2D g2d = (Graphics2D)g;
             AffineTransform old = g2d.getTransform();
-
             AffineTransform r = AffineTransform.getRotateInstance(getRotation(), (int)getXpos(), (int)getYpos());
-
             g2d.setTransform(r);
-
             g2d.drawImage(sprite,(int)getXpos()-((int)getScale()/2), (int)getYpos()-((int)getScale()/2),(int)getScale(),(int)getScale(),null);
             g2d.setTransform(old);
         }
