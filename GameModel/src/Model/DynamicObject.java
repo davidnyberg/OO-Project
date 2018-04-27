@@ -68,7 +68,7 @@ public abstract class DynamicObject extends GameObject {
       }
       else{
         g.setColor(Color.red);
-        g.fillRect((int) getXpos(), (int) getYpos(), (int) getScale(), (int) getScale());
+        g.fillRect((int) getXpos()- ((int) getScale() / 2), (int) getYpos()- ((int) getScale() / 2), (int) getScale(), (int) getScale());
       }
     }
     else

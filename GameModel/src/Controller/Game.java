@@ -28,7 +28,7 @@ public class Game {
     private List<DynamicObject> deadThings;
 
     private int score = 0;
-
+    private int enemyScore = 10;
     private int loopCounter;
     public int getScore() {
         return score;
@@ -234,7 +234,7 @@ public class Game {
       //check for enemy collisions
       for(Bullet b : bullets)
       {
-        System.out.println("checking bullet");
+        //System.out.println("checking bullet");
         if(!b.getIsDead()) {
           List<CollisionData> bCollisions = checkCollisions(b);
           for (CollisionData cd : bCollisions) {
@@ -246,6 +246,7 @@ public class Game {
                 deadThings.add(b);
                 e.setIsDead(true);
                 deadThings.add(e);
+                score += enemyScore;
               }
             }
             //if collision with wall, die
@@ -267,7 +268,8 @@ public class Game {
         else
         {
           if(dyno instanceof Player) {
-            //game over
+            //game oveR
+              // GOTO MAIN MENU
           }
           else if(dyno instanceof Enemy){
             enemies.remove(dyno);
@@ -278,7 +280,7 @@ public class Game {
         }
       }
       deadThings = stillDeadThings;
-      System.out.println(deadThings);
+      //System.out.println(deadThings);
 
       loopCounter++;
       view.paint(view.getBufferStrategy().getDrawGraphics());

@@ -22,11 +22,14 @@ public class Enemy extends DynamicObject {
     }
 
     public void moveTowardTarget(){
+
         MoveInDirection(target_x - getXpos(), target_y - getYpos());
+        setRotation(   (float)Math.atan2(-(target_x - getXpos()), target_y - getYpos())  +(float)Math.PI/2);
     }
 
     public void RotateTowardTarget()
     {
-        //do math to find rotation facing toward target from current position
+        //rotate to target
+        setRotation((float)Math.atan2(target_x - getXpos(), target_y - getYpos()));
     }
 }
