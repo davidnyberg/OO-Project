@@ -55,7 +55,7 @@ public class Game {
       walls.add(new Wall(30, 60, 30,0));
       walls.add(new Wall(30, 90,30,0));*/
 
-       enemies.add(new Enemy(500,300, 30, 0,1,1));
+       enemies.add(new Enemy(500,300, 30, 0,1,100));
 
       //create view
        view = new GameView(window, this, height, width, getAllObjects());
@@ -171,13 +171,16 @@ public class Game {
     public void GameLoop(){
 
       for(Enemy e : enemies){
+        if(!e.getIsDead()) {
           e.SetTargetPosition(player.getXpos(), player.getYpos());
           e.moveTowardTarget();
+        }
       }
 
       //move all bullets
       for (Bullet b : bullets){
-        b.MoveInDirection(0,0);
+        if(!b.getIsDead())
+          b.MoveInDirection();
       }
 
       //things that only happen while player is alive
@@ -194,34 +197,11 @@ public class Game {
             }
           }
           //if collision with enemy, die
-          if (cd.object instanceof Enemy) {
+          else if (cd.object instanceof Enemy) {
             player.setIsDead(true);
             deadThings.add(player);
           }
         }
-
-        //check for enemy collisions
-        for(Enemy e : enemies)
-        {
-          List<CollisionData> eCollisions = checkCollisions(e);
-          for(CollisionData cd : eCollisions)
-          {
-            //if collision with wall, push enemy back
-            if (cd.object instanceof Wall) {
-              if (abs(cd.horOverlap) < abs(cd.vertOverlap)) {
-                e.setXpos(e.getXpos() - cd.horOverlap);
-              } else {
-                e.setYpos(e.getYpos() - cd.vertOverlap);
-              }
-            }
-            //if collision with bullet, die
-            if(cd.object instanceof Bullet){
-              e.setIsDead(true);
-              deadThings.add(e);
-            }
-          }
-        }
-
         //shoot
         if (player.getShootSpeed() != 0) {
           //if the speed is 0, the player is not shooting
@@ -230,8 +210,52 @@ public class Game {
             bullets.add(new Bullet(player.getXpos(), player.getYpos(), player.getScale() / 4, player.getRotation(), player.getSpeed(), 1));
           }
         }
+      }
 
 
+      //check for enemy collisions
+      for(Enemy e : enemies)
+      {
+        if(!e.getIsDead()) {
+          List<CollisionData> eCollisions = checkCollisions(e);
+          for (CollisionData cd : eCollisions) {
+            //if collision with wall, push enemy back
+            if (cd.object instanceof Wall) {
+              if (abs(cd.horOverlap) < abs(cd.vertOverlap)) {
+                e.setXpos(e.getXpos() - cd.horOverlap);
+              } else {
+                e.setYpos(e.getYpos() - cd.vertOverlap);
+              }
+            }
+          }
+        }
+      }
+
+      //check for enemy collisions
+      for(Bullet b : bullets)
+      {
+        System.out.println("checking bullet");
+        if(!b.getIsDead()) {
+          List<CollisionData> bCollisions = checkCollisions(b);
+          for (CollisionData cd : bCollisions) {
+            //if collision with enemy, die and kill enemy
+            if (cd.object instanceof Enemy) {
+              Enemy e = (Enemy)cd.object;
+              if(!e.getIsDead()) {
+                b.setIsDead(true);
+                deadThings.add(b);
+                e.setIsDead(true);
+                deadThings.add(e);
+              }
+            }
+            //if collision with wall, die
+            else if(cd.object instanceof Wall)
+            {
+              b.setIsDead(true);
+              deadThings.add(b);
+            }
+          }
+        }
       }
 
       //despawn dead things after time

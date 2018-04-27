@@ -12,7 +12,7 @@ public class Bullet extends DynamicObject {
     }
 
 
-    public void MoveInDirection(float x, float y)
+    public void MoveInDirection()
     {
         float dx = (float) (1*cos(this.getRotation()));
         float dy = (float) (1*sin(this.getRotation()));
