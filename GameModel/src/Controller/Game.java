@@ -48,6 +48,7 @@ public class Game {
 
       //create view
        view = new GameView(window, this, height, width, getAllObjects());
+       view.createBufferStrategy(2);
 
       //set up game loop
       class GameLoopTask extends TimerTask {
@@ -193,6 +194,7 @@ public class Game {
           }
       }
 
+      view.paint(view.getBufferStrategy().getDrawGraphics());
       view.repaint();
 
 
