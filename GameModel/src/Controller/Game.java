@@ -46,6 +46,7 @@ public class Game {
        height = 400;
 
        initWalls();
+       walls.add(new Wall(200, 200, 30, 0));
 
        player = new Player(50, 50, 25, 0, 3, 1, 0);
       //test walls for collision
@@ -179,9 +180,9 @@ public class Game {
         b.MoveInDirection(0,0);
       }
 
-
-      //check for player collisions
+      //things that only happen while player is alive
       if(!player.getIsDead()) {
+        //check for player collisions
         List<CollisionData> playerCollisions = checkCollisions(player);
         for (CollisionData cd : playerCollisions) {
           //if collision with wall, push player back
@@ -192,13 +193,36 @@ public class Game {
               player.setYpos(player.getYpos() - cd.vertOverlap);
             }
           }
+          //if collision with enemy, die
           if (cd.object instanceof Enemy) {
             player.setIsDead(true);
             deadThings.add(player);
           }
         }
 
-        //if player isn't dead, shoot
+        //check for enemy collisions
+        for(Enemy e : enemies)
+        {
+          List<CollisionData> eCollisions = checkCollisions(e);
+          for(CollisionData cd : eCollisions)
+          {
+            //if collision with wall, push enemy back
+            if (cd.object instanceof Wall) {
+              if (abs(cd.horOverlap) < abs(cd.vertOverlap)) {
+                e.setXpos(e.getXpos() - cd.horOverlap);
+              } else {
+                e.setYpos(e.getYpos() - cd.vertOverlap);
+              }
+            }
+            //if collision with bullet, die
+            if(cd.object instanceof Bullet){
+              e.setIsDead(true);
+              deadThings.add(e);
+            }
+          }
+        }
+
+        //shoot
         if (player.getShootSpeed() != 0) {
           //if the speed is 0, the player is not shooting
           if (loopCounter % player.getShootSpeed() == 0) {
@@ -206,6 +230,8 @@ public class Game {
             bullets.add(new Bullet(player.getXpos(), player.getYpos(), player.getScale() / 4, player.getRotation(), player.getSpeed(), 1));
           }
         }
+
+
       }
 
       //despawn dead things after time
@@ -233,32 +259,6 @@ public class Game {
       loopCounter++;
       view.paint(view.getBufferStrategy().getDrawGraphics());
       view.repaint();
-
-
-          //score++;
-          //con.setScore(1, "test", score);
-          //--Move objects--
-          //move player
-          //HandleInput();
-          //move enemies (toward player)
-          //move bullets (forward)
-
-
-          //--Check for collisions--
-          //check walls against all objects
-          //if player or enemie, move outside of wall
-          //if bullet, kill bullet
-
-          //check bullets with enemies
-          //if bullet in enemy, kill enemy and bullet
-
-          //check player with enemies
-          //if player in enemy, kill player
-
-          //--Spawn more enemies--
-          //while(need to spawn more enemies)
-            //gen approriate spawn area (not in wall, not too close to player
-            //enemies.add(new enemy)
     }
 
     public void HandleInput(boolean W, boolean A, boolean S, boolean D, boolean SPACE, boolean LEFT, boolean RIGHT, boolean UP, boolean DOWN)
