@@ -16,7 +16,7 @@ import static java.awt.Color.gray;
 public class GameView extends Canvas {
 
     private JFrame window;
-    private Game g;
+    private Game currentGame;
     private int height;
     private int width;
 
@@ -30,18 +30,25 @@ public class GameView extends Canvas {
         this.height = height;
         this.width = width;
 
-        this.g = gameController;
+        this.currentGame = gameController;
     }
 
     //renders all objects and refresh window
     public void paint(Graphics g) {
         //window.getContentPane().removeAll();
         //background
+
         g.setColor(gray);
         g.fillRect(0, 0, width, height);
-        for (GameObject ob : this.g.getAllObjects()){
+        for (GameObject ob : this.currentGame.getAllObjects()){
             ob.render(g);
         }
+        int currentScore = currentGame.getScore();
+        String stringScore = Integer.toString(currentScore);
+        stringScore = "Score: " + stringScore;
+        g.setColor(Color.black);
+        g.drawString(stringScore, 595, 325);
+
     }
 }
 
