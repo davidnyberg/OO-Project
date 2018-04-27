@@ -47,7 +47,7 @@ public class GameView extends Canvas {
         String stringScore = Integer.toString(currentScore);
         stringScore = "Score: " + stringScore;
         g.setColor(Color.black);
-        g.drawString(stringScore, 590, 325);
+        g.drawString(stringScore, 595, 325);
 
     }
 }
