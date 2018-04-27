@@ -27,6 +27,10 @@ public class Game {
     private List<Bullet> bullets;
     private int score = 0;
 
+    public int getScore() {
+        return score;
+    }
+
     Game(JFrame window) {
       //init stuff
        this.window = window;
