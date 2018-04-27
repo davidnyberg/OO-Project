@@ -27,6 +27,7 @@ public class Game {
     private List<Bullet> bullets;
     private int score = 0;
 
+    private int loopCounter;
     public int getScore() {
         return score;
     }
@@ -43,7 +44,7 @@ public class Game {
 
        initWalls();
 
-       player = new Player(50, 50, 25, 0, 3, 1, 2);
+       player = new Player(50, 50, 25, 0, 3, 1, 0);
        //enemies.add(new Enemy(20,20, 30, 0,3,1));
 
       //create view
@@ -178,7 +179,7 @@ public class Game {
 
       //check for collisions
       List<CollisionData> playerCollisions = checkCollisions(player);
-      System.out.println(checkCollisions(player));
+      //System.out.println(checkCollisions(player));
 
       for (CollisionData cd : playerCollisions){
           if (cd.object instanceof Wall){
@@ -193,6 +194,20 @@ public class Game {
           }
       }
 
+        if (player.getShootSpeed() != 0){
+          //if the speed is 0, the player is not shooting
+            if (loopCounter % player.getShootSpeed() == 0){
+                //spawn a Bullet
+                bullets.add(new Bullet(player.getXpos(), player.getYpos(), player.getScale()/4, player.getRotation(), player.getSpeed(), 1));
+            }
+
+        }
+        //move all bullets
+        for (Bullet b : bullets){
+          b.MoveInDirection(0,0);
+        }
+
+        loopCounter++;
       view.repaint();
 
 
@@ -238,15 +253,15 @@ public class Game {
             player.MoveInDirection(dx, dy);
 
         //aiming
-        if (LEFT) {player.setRotation(180);}
+        if      (LEFT) {player.setRotation((float)Math.PI);}
         else if (RIGHT) {player.setRotation(0);}
-        else if (UP) {player.setRotation(90);}
-        else if (DOWN) {player.setRotation(270);}
+        else if (DOWN) {player.setRotation((float)(Math.PI/2));}
+        else if (UP) {player.setRotation((float)(Math.PI * 3/2));}
 
 
         //shooting
         if (SPACE){
-            player.setShootSpeed(1);
+            player.setShootSpeed(10); // every 10 frames
         }
         else {
             player.setShootSpeed(0);

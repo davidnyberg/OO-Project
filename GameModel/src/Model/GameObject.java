@@ -3,6 +3,8 @@ package Model;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -83,7 +85,15 @@ public abstract class GameObject {
 
     public void render(Graphics g){
         if(sprite != null){
-            g.drawImage(sprite,(int)getXpos(), (int)getYpos(),(int)getScale(),(int)getScale(),null);
+            Graphics2D g2d = (Graphics2D)g;
+            AffineTransform old = g2d.getTransform();
+
+            AffineTransform r = AffineTransform.getRotateInstance(getRotation(), (int)getXpos(), (int)getYpos());
+
+            g2d.setTransform(r);
+
+            g2d.drawImage(sprite,(int)getXpos()-((int)getScale()/2), (int)getYpos()-((int)getScale()/2),(int)getScale(),(int)getScale(),null);
+            g2d.setTransform(old);
         }
         //default
         else {
