@@ -53,7 +53,7 @@ public class Game {
         }
       }
       Timer t = new Timer();
-      t.schedule(new GameLoopTask(), 0, 1000/1);
+      t.schedule(new GameLoopTask(), 0, 1000/60);
 
     }
 
@@ -167,9 +167,6 @@ public class Game {
 
     public void GameLoop(){
 
-      //move player
-      player.MoveInDirection(0, -1);
-
       for(Enemy e : enemies){
           e.SetTargetPosition(player.getXpos(), player.getYpos());
           e.moveTowardTarget();
@@ -186,6 +183,9 @@ public class Game {
               } else {
                   player.setYpos(player.getYpos()+cd.vertOverlap);
               }
+          }
+          if (cd.object instanceof Enemy){
+              //Kill player
           }
       }
 
@@ -224,7 +224,8 @@ public class Game {
 
         //moving
         float dx = 0;
-        float dy = 0;        if (W){ dy -= speed;}
+        float dy = 0;
+        if (W){ dy -= speed;}
         if (A){ dx -= speed;}
         if (S){ dy += speed;}
         if (D){ dx += speed;}
