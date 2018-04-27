@@ -139,29 +139,28 @@ public class Game {
 
         boolean left = rb1 > lb2 && lb1 < lb2;
         boolean right = lb1 < rb2 && rb1 >= rb2;
+        boolean insideHor = lb1 > lb2 && rb1 < rb2;
         boolean top = bb1 < tb2 && tb1 >= tb2;
         boolean bottom = tb1 > bb2 && bb1 < bb2;
+        boolean insideVert = tb1 < tb2 && bb1 > bb2;
 
-        boolean horizontalOverlap = left || right;
-        boolean verticalOverlap = top || bottom;
+        boolean horizontalOverlap = left || right || insideHor;
+        boolean verticalOverlap = top || bottom || insideVert;
 
         if (horizontalOverlap && verticalOverlap) {
-          int hori, vert;
+          int hori = 0, vert = 0;
           if (left) {
             hori = rb1 - lb2;
           } else if (right) {
-            //hori = rb2 - lb1;
             hori = lb1 - rb2;
-          } else {
-            hori = 0;
           }
+
           if (top) {
             vert = bb1 - tb2;
           } else if (bottom) {
             vert = tb1 - bb2;
-          } else {
-            vert = 0;
           }
+
           collisionList.add(new CollisionData(ob, hori, vert));
         }
       }
@@ -190,7 +189,7 @@ public class Game {
         for (CollisionData cd : playerCollisions) {
           //if collision with wall, push player back
           if (cd.object instanceof Wall) {
-            if (abs(cd.horOverlap) < abs(cd.vertOverlap)) {
+            if (cd.horOverlap != 0 && abs(cd.horOverlap) < abs(cd.vertOverlap)) {
               player.setXpos(player.getXpos() - cd.horOverlap);
             } else {
               player.setYpos(player.getYpos() - cd.vertOverlap);
@@ -221,7 +220,7 @@ public class Game {
           for (CollisionData cd : eCollisions) {
             //if collision with wall, push enemy back
             if (cd.object instanceof Wall) {
-              if (abs(cd.horOverlap) < abs(cd.vertOverlap)) {
+              if (cd.horOverlap != 0 && abs(cd.horOverlap) < abs(cd.vertOverlap)) {
                 e.setXpos(e.getXpos() - cd.horOverlap);
               } else {
                 e.setYpos(e.getYpos() - cd.vertOverlap);
