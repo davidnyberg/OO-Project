@@ -20,4 +20,5 @@ public class Player extends DynamicObject {
     public void setShootSpeed(float shootSpeed){
         this.shootSpeed = shootSpeed;
     }
+
 }

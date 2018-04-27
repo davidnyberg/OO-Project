@@ -43,8 +43,8 @@ public class Game {
 
        initWalls();
 
-       player = new Player(50, 50, 30, 0, 3, 1, 2);
-       enemies.add(new Enemy(20,20, 30, 0,3,1));
+       player = new Player(50, 50, 25, 0, 3, 1, 2);
+       //enemies.add(new Enemy(20,20, 30, 0,3,1));
 
       //create view
        view = new GameView(window, this, height, width, getAllObjects());
@@ -57,14 +57,11 @@ public class Game {
         }
       }
       Timer t = new Timer();
-      t.schedule(new GameLoopTask(), 0, 1000/60);
+      t.schedule(new GameLoopTask(), 0, 1000/1);
 
     }
 
-    public void movePlayer(int x, int y){
-        //move player
-        player.MoveInDirection(x, y);
-    }
+
 
     private void initWalls()
     {
@@ -135,10 +132,12 @@ public class Game {
         boolean right = lb1 < rb2 && rb1 > rb2;
         boolean top = bb1 < tb2 && tb1 > tb2;
         boolean bottom = tb1 > bb2 && bb1 < bb2;
+        boolean innerVert = tb1 < tb2 && bb1 > bb2;
+        boolean innerHor = lb1 > lb2 && rb1 < rb2;
 
+        boolean horizontalOverlap = left || right || innerHor;
+        boolean verticalOverlap = top || bottom || innerVert;
 
-        boolean horizontalOverlap = left || right;
-        boolean verticalOverlap = top || bottom;
 
 
 
@@ -148,15 +147,20 @@ public class Game {
 
             if(left){
                 hori = rb1 - lb2;
-          } else {
+          } else if (right) {
                 hori = rb2 - lb1;
+            } else {
+                hori = 0;
             }
 
             if (top){
                 vert = tb2 - bb1;
-            } else {
+            } else if (bottom){
                 vert = bb2 - tb1;
+            } else {
+                vert = 0;
             }
+
 
             collisionList.add(new CollisionData(ob, hori, vert));
         }
@@ -168,7 +172,7 @@ public class Game {
     public void GameLoop(){
 
       //move player
-      //player.MoveInDirection(1, 0);
+      player.MoveInDirection(0, -1);
 
       for(Enemy e : enemies){
           e.SetTargetPosition(player.getXpos(), player.getYpos());
@@ -218,25 +222,35 @@ public class Game {
             //enemies.add(new enemy)
     }
 
-    public void HandleInput()
+    public void HandleInput(boolean W, boolean A, boolean S, boolean D, boolean SPACE, boolean LEFT, boolean RIGHT, boolean UP, boolean DOWN)
     {
-      float moveVecX = 0;
-      float moveVecY = 0;
-      //if A
-      //  move left
-      //  moveVecX -= 1;
-      //if S
-      //  move down
-      //  moveVecY -= 1;
-      //if D
-      //  move right
-      //  moveVecX += 1;
-      //if W
-      //  move up
-      //  moveVecY += 1;
+        int speed = 1;
 
-      if(player != null)
-        player.MoveInDirection(moveVecX, moveVecY);
+        //moving
+        float dx = 0;
+        float dy = 0;        if (W){ dy -= speed;}
+        if (A){ dx -= speed;}
+        if (S){ dy += speed;}
+        if (D){ dx += speed;}
+
+        if(player != null)
+            player.MoveInDirection(dx, dy);
+
+        //aiming
+        if (LEFT) {player.setRotation(180);}
+        else if (RIGHT) {player.setRotation(0);}
+        else if (UP) {player.setRotation(90);}
+        else if (DOWN) {player.setRotation(270);}
+
+
+        //shooting
+        if (SPACE){
+            player.setShootSpeed(1);
+        }
+        else {
+            player.setShootSpeed(0);
+        }
+
     }
 
 
