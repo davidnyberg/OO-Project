@@ -43,12 +43,18 @@ public class Game {
 
        initWalls();
 
-       player = new Player(50, 50, 25, 0, 3, 1, 2);
+      //test walls for collision
+      /*walls.add(new Wall(30, 30, 30, 0));
+      //walls.add(new Wall(60,30,30,0));
+      walls.add(new Wall(30, 60, 30,0));
+      walls.add(new Wall(30, 90,30,0));*/
+
+       player = new Player(50, 50, 31, 0, 3, 1, 2);
        //enemies.add(new Enemy(20,20, 30, 0,3,1));
 
       //create view
        view = new GameView(window, this, height, width, getAllObjects());
-       view.createBufferStrategy(2);
+       view.createBufferStrategy(4);
 
       //set up game loop
       class GameLoopTask extends TimerTask {
@@ -107,8 +113,6 @@ public class Game {
       List<GameObject> allObjects = getAllObjects();
       allObjects.remove(object);
 
-      //collisionData a = new collisionData();
-
       int xpos = (int)object.getXpos();
       int ypos = (int)object.getYpos();
       int scaleHalf = (int)object.getScale() / 2;
@@ -120,6 +124,8 @@ public class Game {
 
       for(GameObject ob : allObjects)
       {
+        System.out.println("---object at "  + ob.getXpos() + " " + ob.getYpos());
+
         int OBxpos = (int)ob.getXpos();
         int OBypos = (int)ob.getYpos();
         int OBscaleHalf = (int)ob.getScale() / 2;
@@ -130,34 +136,37 @@ public class Game {
         int tb2 = (OBypos + OBscaleHalf);
 
         boolean left = rb1 > lb2 && lb1 < lb2;
-        boolean right = lb1 < rb2 && rb1 > rb2;
-        boolean top = bb1 < tb2 && tb1 > tb2;
+        boolean right = lb1 < rb2 && rb1 >= rb2;
+        if(right)
+          System.out.println("right because rb1: " + rb1 + " > lb2: " + lb2 + " and lb1: " + lb1 + " >= lb2: " + lb2);
+        else
+          System.out.println("not right because rb1: " + rb1 + " < lb2: " + lb2 + " or lb1: " + lb1 + " < lb2: " + lb2);
+        boolean top = bb1 < tb2 && tb1 >= tb2;
+        if(top)
+          System.out.println("top because bb1: " + bb1 + " < tb2: " + tb2 + " and tb1: " + tb1 + " > tb2: " + tb2);
         boolean bottom = tb1 > bb2 && bb1 < bb2;
-        boolean innerVert = tb1 < tb2 && bb1 > bb2;
-        boolean innerHor = lb1 > lb2 && rb1 < rb2;
 
-        boolean horizontalOverlap = left || right || innerHor;
-        boolean verticalOverlap = top || bottom || innerVert;
-
-
-
+        boolean horizontalOverlap = left || right;
+        boolean verticalOverlap = top || bottom;
 
         if(horizontalOverlap && verticalOverlap) {
 
+          System.out.println("collision");
           int hori, vert;
 
             if(left){
                 hori = rb1 - lb2;
           } else if (right) {
-                hori = rb2 - lb1;
+                //hori = rb2 - lb1;
+                hori = lb1 - rb2;
             } else {
                 hori = 0;
             }
 
             if (top){
-                vert = tb2 - bb1;
+                vert = bb1 - tb2;
             } else if (bottom){
-                vert = bb2 - tb1;
+                vert = tb1 - bb2;
             } else {
                 vert = 0;
             }
@@ -186,7 +195,7 @@ public class Game {
               if(abs(cd.horOverlap) < abs(cd.vertOverlap)){
                   player.setXpos(player.getXpos()-cd.horOverlap);
               } else {
-                  player.setYpos(player.getYpos()+cd.vertOverlap);
+                  player.setYpos(player.getYpos()-cd.vertOverlap);
               }
           }
           if (cd.object instanceof Enemy){
