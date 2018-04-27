@@ -278,6 +278,7 @@ public class Game {
           stillDeadThings.add(dyno);
         else
         {
+          //gameover
           if(dyno instanceof Player) {
             t.cancel();
             new DisplayMain(window);
