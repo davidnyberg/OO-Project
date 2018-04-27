@@ -20,7 +20,7 @@ public class GameView extends Canvas {
     private int height;
     private int width;
 
-    public GameView(JFrame window, Game gameController, int height, int width, List<GameObject> o) {
+    public GameView(JFrame window, Game gameController, int height, int width) {
         this.addKeyListener(new KeyboardInput(gameController));
         this.window = window;
         this.window.setResizable(false);
@@ -47,7 +47,7 @@ public class GameView extends Canvas {
         String stringScore = Integer.toString(currentScore);
         stringScore = "Score: " + stringScore;
         g.setColor(Color.black);
-        g.drawString(stringScore, 595, 375);
+        g.drawString(stringScore, 300, 200);
 
     }
 }

@@ -31,7 +31,6 @@ public class MainMenuView{
         p2.add(play,c);
         p2.add(ldrboard,c);
 
-
         play.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

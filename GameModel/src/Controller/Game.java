@@ -5,10 +5,8 @@ import View.GameView;
 
 import javax.management.DynamicMBean;
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import static java.lang.StrictMath.abs;
 
@@ -18,6 +16,8 @@ public class Game {
 
     private int width;
     private int height;
+
+    private Timer t; //for game loop
 
     private GameView view;
     private JFrame window;
@@ -29,6 +29,7 @@ public class Game {
 
     private int score = 0;
     private int enemyScore = 10;
+    private int enemyCount = 3;
     private int loopCounter;
     public int getScore() {
         return score;
@@ -46,19 +47,12 @@ public class Game {
        height = 400;
 
        initWalls();
-       walls.add(new Wall(200, 200, 30, 0));
+       addRandomWalls(8);
 
-       player = new Player(50, 50, 25, 0, 3, 1, 0);
-      //test walls for collision
-      /*walls.add(new Wall(30, 30, 30, 0));
-      //walls.add(new Wall(60,30,30,0));
-      walls.add(new Wall(30, 60, 30,0));
-      walls.add(new Wall(30, 90,30,0));*/
-
-       enemies.add(new Enemy(500,300, 30, 0,1,100));
+       player = new Player(50, 50, 25, 0, 4, 300, 0);
 
       //create view
-       view = new GameView(window, this, height, width, getAllObjects());
+       view = new GameView(window, this, height, width);
        view.createBufferStrategy(4);
 
       //set up game loop
@@ -68,12 +62,23 @@ public class Game {
           GameLoop();
         }
       }
-      Timer t = new Timer();
+      t = new Timer();
       t.schedule(new GameLoopTask(), 0, 1000/60);
 
     }
 
+    private void addRandomWalls(int count)
+    {
+      Random r = new Random();
+      for(int i = 0; i < count; i++)
+        walls.add(new Wall(r.nextInt(width), r.nextInt(height), r.nextInt(50-20)+20, 0));
+    }
 
+    private void addRandomEnemy()
+    {
+      Random r = new Random();
+      enemies.add(new Enemy(r.nextInt(((width - 100)-100)+100),r.nextInt(((height - 100)-100)+100),r.nextInt(25-15)+15, 0 , r.nextInt(10-2)/10+0.2f, 100));
+    }
 
     private void initWalls()
     {
@@ -81,12 +86,12 @@ public class Game {
       int ycount = 11;
       int xcount = 22;
       for(int x = 0; x <= xcount; x++) {
-        walls.add(new Wall(x*scale, 0, scale, 0));
-        walls.add(new Wall(x*scale, scale*ycount, scale, 0));
+        walls.add(new Wall(x*scale+(scale/2), (scale/2), scale, 0));
+        walls.add(new Wall(x*scale+(scale/2), scale*ycount+(scale/2), scale, 0));
       }
       for(int y = 1; y < ycount; y++){
-        walls.add(new Wall(0, y*scale, scale, 0));
-        walls.add(new Wall(xcount*scale, y*scale, scale, 0));
+        walls.add(new Wall((scale/2), y*scale+(scale/2), scale, 0));
+        walls.add(new Wall(xcount*scale+(scale/2), y*scale+(scale/2), scale, 0));
       }
     }
 
@@ -137,12 +142,12 @@ public class Game {
         int bb2 = (OBypos - OBscaleHalf);
         int tb2 = (OBypos + OBscaleHalf);
 
-        boolean left = rb1 > lb2 && lb1 < lb2;
-        boolean right = lb1 < rb2 && rb1 >= rb2;
-        boolean insideHor = lb1 > lb2 && rb1 < rb2;
-        boolean top = bb1 < tb2 && tb1 >= tb2;
-        boolean bottom = tb1 > bb2 && bb1 < bb2;
-        boolean insideVert = tb1 < tb2 && bb1 > bb2;
+        boolean left = rb1 >= lb2 && lb1 <= lb2;
+        boolean right = lb1 <= rb2 && rb1 >= rb2;
+        boolean insideHor = lb1 >= lb2 && rb1 <= rb2;
+        boolean top = bb1 <= tb2 && tb1 >= tb2;
+        boolean bottom = tb1 >= bb2 && bb1 <= bb2;
+        boolean insideVert = tb1 <= tb2 && bb1 >= bb2;
 
         boolean horizontalOverlap = left || right || insideHor;
         boolean verticalOverlap = top || bottom || insideVert;
@@ -153,13 +158,15 @@ public class Game {
             hori = rb1 - lb2;
           } else if (right) {
             hori = lb1 - rb2;
-          }
+          } else if (insideHor)
+            hori = (int)object.getScale();
 
           if (top) {
             vert = bb1 - tb2;
           } else if (bottom) {
             vert = tb1 - bb2;
-          }
+          } else if (insideVert)
+            vert = (int)object.getScale();
 
           collisionList.add(new CollisionData(ob, hori, vert));
         }
@@ -169,12 +176,17 @@ public class Game {
 
     public void GameLoop(){
 
+      //move enemies and spawn more if needed
+      int aliveEnemies = 0;
       for(Enemy e : enemies){
         if(!e.getIsDead()) {
+          aliveEnemies++;
           e.SetTargetPosition(player.getXpos(), player.getYpos());
           e.moveTowardTarget();
         }
       }
+      if(aliveEnemies < enemyCount)
+        addRandomEnemy();
 
       //move all bullets
       for (Bullet b : bullets){
@@ -267,8 +279,9 @@ public class Game {
         else
         {
           if(dyno instanceof Player) {
-            //game oveR
-              // GOTO MAIN MENU
+            t.cancel();
+            new DisplayMain(window);
+            return;
           }
           else if(dyno instanceof Enemy){
             enemies.remove(dyno);
@@ -279,7 +292,6 @@ public class Game {
         }
       }
       deadThings = stillDeadThings;
-      //System.out.println(deadThings);
 
       loopCounter++;
       view.paint(view.getBufferStrategy().getDrawGraphics());
@@ -309,7 +321,6 @@ public class Game {
         else if (RIGHT) {player.setRotation(0);}
         else if (DOWN) {player.setRotation((float)(Math.PI/2));}
         else if (UP) {player.setRotation((float)(Math.PI * 3/2));}
-
 
         //shooting
         if (SPACE){
